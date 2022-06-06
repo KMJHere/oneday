@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.annotation.Commit;
 
 
+import javax.persistence.Column;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -127,6 +129,11 @@ public class MemoRepositoryTests {
     }
 
     @Test
+    public void testQueryGetDesc() {
+        memoRepository.getListDesc();
+    }
+
+    @Test
     public void testInsertDummies() {
         IntStream.rangeClosed(1,100).forEach(i -> {
             Memo memo = Memo.builder().memoText("Sample.." + i).build();
@@ -147,5 +154,26 @@ public class MemoRepositoryTests {
         Long mno = Long.valueOf(1);
 
         memoRepository.deleteById(mno);
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void testDeleteQueryMethod() {
+        Long mno = Long.valueOf(2);
+
+       memoRepository.deleteMemoByMnoLessThan(mno);
+    }
+
+    @Test
+    public void testNativeSql() {
+        List<Object[]> list = memoRepository.getNativeSql();
+
+        for(Object[] arr : list) {
+            for(Object obj : arr) {
+                System.out.println("test" + obj);
+            }
+        }
+
     }
 }
