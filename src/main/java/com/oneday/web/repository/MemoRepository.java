@@ -18,7 +18,7 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     // 쿼리 메서드 확인
     List<Memo> findByMnoBetweenOrderByMnoDesc(Long from, Long to);
 
-    // 쿼리 메서드 확인2 , 메서드 선언 간결하게 하기 위해 Pageable 파라미터 추가..
+    // 쿼리 메서드 확인2 , 메서드 선언 간결하게 하기 위해 Pageable 파라미터 추가..!
     Page<Memo> findByMnoBetween(Long from, Long to, Pageable pageable);
 
     // deleteBy 삭제처리
