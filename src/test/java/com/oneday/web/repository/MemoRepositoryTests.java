@@ -1,5 +1,4 @@
 package com.oneday.web.repository;
-
 import com.oneday.web.entity.Memo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

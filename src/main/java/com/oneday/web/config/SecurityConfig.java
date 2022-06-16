@@ -30,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/sample/all").permitAll()
+                .antMatchers("/sample/ex*").permitAll()
                 .antMatchers("/sample/member").hasRole("USER");
 
         http.formLogin(); // 인가 or 인증에 문제 시 로그인 화면 반환
