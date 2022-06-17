@@ -45,5 +45,12 @@
     <ul>
         <li th:each="dto, sate : ${list}" th:class="${dto.sno % 5 == 0} ? 'target'" th:text="${dto}"></li>
     </ul>
+
+    <!-- th:block -->
+    <ul>
+        <th:block th:each="dto: ${list}">
+            <li th:text="${dto.sno % 5 == 0} ? ${dto.sno} : ${dto.first}"></li>
+        </th:block>
+    </ul>
 </body>
 </html>
