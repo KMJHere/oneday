@@ -74,4 +74,8 @@ public class SampleController {
         log.info("ex3");
     }
 
+    @GetMapping("/exLayout1")
+    public void exLayout1() {
+        log.info("exLayout...");
+    }
 }
