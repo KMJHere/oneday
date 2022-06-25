@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import javax.transaction.Transactional;
 import java.util.List;
 
-// JpaRepository 인터페이스 상속, 엔티티 타입(Memo 크래스 타입) @Id의 타입 지정(Long) => Spring Data Jpa는 인터페이스 선언 시 자동으로 스프링의 빈으로 등록
+// JpaRepository 인터페이스 상속, 엔티티 타입(Memo 클래스 타입) @Id의 타입 지정(Long) => Spring Data Jpa는 인터페이스 선언 시 자동으로 스프링의 빈으로 등록
 public interface MemoRepository extends JpaRepository<Memo, Long> {
     // 쿼리 메서드 확인
     List<Memo> findByMnoBetweenOrderByMnoDesc(Long from, Long to);
