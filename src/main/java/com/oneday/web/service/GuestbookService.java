@@ -10,6 +10,8 @@ public interface GuestbookService {
 
     PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO requestDTO);
 
+    GuestbookDTO read(Long gno);
+
 
     // insert
     default Guestbook dtoToEntity(GuestbookDTO dto) {
@@ -24,7 +26,6 @@ public interface GuestbookService {
     }
 
     // select
-
     default GuestbookDTO entityToDTO(Guestbook entity) {
         GuestbookDTO dto = GuestbookDTO.builder()
                 .gno(entity.getGno())
