@@ -23,19 +23,6 @@ import java.util.function.Function;
 public class GuestbookServiceImpl implements GuestbookService {
 
     private final GuestbookRepository repository; // 반드시 final로 선언
-    @Override
-    public Long register(GuestbookDTO dto) {
-        log.info("dto.....");
-        log.info("Start.....");
-
-        Guestbook entity = dtoToEntity(dto);
-
-        log.info(entity);
-
-        repository.save(entity);
-
-        return entity.getGno();
-    }
 
     @Override
     public PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO requestDTO) {
@@ -55,4 +42,43 @@ public class GuestbookServiceImpl implements GuestbookService {
 
         return result.isPresent() ? entityToDTO(result.get()): null;
     }
+
+    // 등록 
+    @Override
+    public Long register(GuestbookDTO dto) {
+        log.info("dto.....");
+        log.info("Start.....");
+
+        Guestbook entity = dtoToEntity(dto);
+
+        log.info(entity);
+
+        repository.save(entity);
+
+        return entity.getGno();
+    }
+
+    // 수정
+    @Override
+    public void modify(GuestbookDTO dto) {
+        log.info("modify start..");
+
+        Optional<Guestbook> result = repository.findById(dto.getGno());
+
+        if(result.isPresent()) {
+            Guestbook entity = result.get();
+
+            entity.changeTitle(dto.getTitle());
+            entity.changeContent(dto.getContent());
+
+            repository.save(entity);
+        }
+    }
+
+    // 삭제
+    @Override
+    public void remove(Long gno) {
+        repository.deleteById(gno);
+    }
+
 }
