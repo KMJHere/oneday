@@ -13,6 +13,10 @@ import org.springframework.data.domain.Sort;
 public class PageRequestDTO {
     private int page;
     private int size;
+    
+    // 검색 조건 추가를 위한 속성
+    private String type;
+    private String keyword;
 
     public PageRequestDTO() {
         this.page = 1;

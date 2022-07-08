@@ -5,7 +5,10 @@ import com.oneday.web.dto.GuestbookDTO;
 import com.oneday.web.dto.PageRequestDTO;
 import com.oneday.web.dto.PageResultDTO;
 import com.oneday.web.entity.Guestbook;
+import com.oneday.web.entity.QGuestbook;
 import com.oneday.web.repository.GuestbookRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -81,4 +84,39 @@ public class GuestbookServiceImpl implements GuestbookService {
         repository.deleteById(gno);
     }
 
+    private BooleanBuilder getSearch(PageRequestDTO pageRequestDTO) {
+        // querydsl 처리, 동적 쿼리
+        String type = pageRequestDTO.getType();
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        QGuestbook qGuestbook = QGuestbook.guestbook;
+
+        String keyword = pageRequestDTO.getKeyword();
+
+        BooleanExpression booleanExpression = qGuestbook.gno.gt(0L); // gno > 0 조건 생성
+
+        booleanBuilder.and(booleanExpression);
+
+        if(type == null || type.trim().length() == 0) {
+            // 검색조건이 없는 경우..
+            return booleanBuilder;
+        }
+
+        // 검색 조건 설정
+        BooleanBuilder conditionBuilder = new BooleanBuilder();
+
+        if(type.contains("t")) {
+            conditionBuilder.or(qGuestbook.title.contains(keyword));
+        } else if(type.contains("c")) {
+            conditionBuilder.or(qGuestbook.content.contains(keyword));
+        } else if(type.contains("w")) {
+            conditionBuilder.or(qGuestbook.writer.contains(keyword));
+        }
+
+        // 조건 통합
+        booleanBuilder.and(conditionBuilder);
+
+        return booleanBuilder;
+    }
 }
