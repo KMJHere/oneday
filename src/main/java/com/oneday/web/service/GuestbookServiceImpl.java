@@ -31,7 +31,10 @@ public class GuestbookServiceImpl implements GuestbookService {
     public PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO requestDTO) {
         Pageable pageable = requestDTO.getPageable(Sort.by("gno").descending());
 
-        Page<Guestbook> result = repository.findAll(pageable);
+        BooleanBuilder booleanBuilder = getSearch(requestDTO); // 검색 조건 처리
+
+        // Querydsl 사용
+        Page<Guestbook> result = repository.findAll(booleanBuilder, pageable);
 
         // java.util.function 생성
         Function<Guestbook, GuestbookDTO> fn = (entity -> entityToDTO(entity));
@@ -108,9 +111,11 @@ public class GuestbookServiceImpl implements GuestbookService {
 
         if(type.contains("t")) {
             conditionBuilder.or(qGuestbook.title.contains(keyword));
-        } else if(type.contains("c")) {
+        }
+        if(type.contains("c")) {
             conditionBuilder.or(qGuestbook.content.contains(keyword));
-        } else if(type.contains("w")) {
+        }
+        if(type.contains("w")) {
             conditionBuilder.or(qGuestbook.writer.contains(keyword));
         }
 
