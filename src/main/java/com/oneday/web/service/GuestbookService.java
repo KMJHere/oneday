@@ -34,6 +34,7 @@ public interface GuestbookService {
         GuestbookDTO dto = GuestbookDTO.builder()
                 .gno(entity.getGno())
                 .title(entity.getTitle())
+                .content(entity.getContent())
                 .writer(entity.getWriter())
                 .regDate(entity.getRegDate())
                 .modDate(entity.getModDate())

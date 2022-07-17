@@ -4,7 +4,10 @@
     <th:block th:fragment="content">
         <h1 class="mt-4">GuestBook Modify Page</h1>
         <form action="/guestbook/modify" method="post">
-            <input type="hidden" name="page" th:value="${requestDTO.page}" readonly>
+            <!-- 목록으로 이동, 페이지 번호 -->
+            <input type="hidden" name="page" th:value="${requestDTO.page}">
+            <input type="hidden" name="type" th:value="${requestDTO.type}">
+            <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
             <div class="form-group">
                 <label>Gno</label>
                 <input type="text" class="form-control" name="gno" th:value="${dto.gno}" readonly>
@@ -57,16 +60,20 @@
     });
 
     $(".listBtn").on("click", function() {
-        var pageInfo = $("input[name='page']");
+        // var pageInfo = $("input[name='page']");
+        var page = $("input[name='page']");
+        var type = $("input[name='type']");
+        var keyword = $("input[name='keyword']");
 
         actionForm.empty(); // form태그 안에 모든 내용 지우기, page 정보만 필요
-        actionForm.append(pageInfo); // 목록 페이지 정보 추가
+        actionForm.append(page); // 목록 페이지 추가
+        actionForm.append(type); // 목록 페이지 타입 추가
+        actionForm.append(keyword); // 목록 페이지 키워드 추가
+
         actionForm.attr("action", "/guestbook/list")
                     .attr("method", "get");
 
         console.log(actionForm.html()); // html 소스 확인
         actionForm.submit();
     });
-
-
 </script>

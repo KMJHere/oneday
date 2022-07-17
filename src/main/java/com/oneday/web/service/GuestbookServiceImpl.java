@@ -77,6 +77,9 @@ public class GuestbookServiceImpl implements GuestbookService {
             entity.changeTitle(dto.getTitle());
             entity.changeContent(dto.getContent());
 
+            log.info("getGno" + dto.getGno());
+            log.info("getTitle" + dto.getTitle());
+            log.info("getContent" + dto.getContent());
             repository.save(entity);
         }
     }

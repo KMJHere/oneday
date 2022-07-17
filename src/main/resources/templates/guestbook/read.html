@@ -27,8 +27,8 @@
             <label>최종수정일</label>
             <input type="text" class="form-control" name="moddate" th:value="${#temporals.format(dto.modDate, 'yyyy/mm/dd HH:mm:ss')}" readonly>
         </div><br>
-        <a th:href="@{/guestbook/modify(gno=${dto.gno}, page=${requestDTO.page})}"><button type="button" class="btn btn-primary">수정하기</button></a>
-        <a th:href="@{/guestbook/list(page=${requestDTO.page})}"><button type="button" class="btn btn-info">목록으로</button></a>
+        <a th:href="@{/guestbook/modify(gno=${dto.gno}, page=${requestDTO.page}, type=${requestDTO.type}, keyword=${requestDTO.keyword})}"><button type="button" class="btn btn-primary">수정하기</button></a>
+        <a th:href="@{/guestbook/list(page=${requestDTO.page}, type=${requestDTO.type}, keyword=${requestDTO.keyword})}"><button type="button" class="btn btn-info">목록으로</button></a>
     </th:block>
 </th:block>
 
