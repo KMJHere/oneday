@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -28,6 +29,7 @@ public class BoardRepositoryTests {
         });
     }
 
+    @Transactional
     @Test
     public void testReadBoard1() {
         Optional<Board> result = boardRepository.findById(Integer.toUnsignedLong(1));
