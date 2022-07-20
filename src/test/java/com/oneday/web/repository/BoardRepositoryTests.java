@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -38,5 +41,23 @@ public class BoardRepositoryTests {
 
         System.out.println(board);
         System.out.println(board.getWriter());
+    }
+
+    @Test
+    public void testWithWriter() {
+        Object result = boardRepository.getBoardWithWriter(100L);
+
+        Object[] arr = (Object[])result;
+
+        System.out.println(arr.toString());
+    }
+
+    @Test
+    public void testWithBoardReply() {
+        List<Object[]> result = boardRepository.getBoardWithReply(100L);
+
+        for(Object[] arr : result) {
+            System.out.println(Arrays.toString(arr));
+        }
     }
 }
