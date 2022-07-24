@@ -5,6 +5,10 @@ import com.oneday.web.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -59,5 +63,28 @@ public class BoardRepositoryTests {
         for(Object[] arr : result) {
             System.out.println(Arrays.toString(arr));
         }
+    }
+
+    // 댓글 갯수 확인
+    @Test
+    public void testWithReplyCount() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("bno").descending());
+
+        Page<Object[]> result = boardRepository.getBoardWithReplyCount(pageable);
+
+        result.get().forEach(idx -> {
+            Object[] aoDat = (Object[])idx;
+
+            System.out.println(Arrays.toString(aoDat));
+        });
+    }
+
+    @Test
+    public void testRead3() {
+        Object result = boardRepository.getBoardByBno(100L);
+
+        Object[] aoDat = (Object[])result;
+
+        System.out.print(Arrays.toString(aoDat));
     }
 }
