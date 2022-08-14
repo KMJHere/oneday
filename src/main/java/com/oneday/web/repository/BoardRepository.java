@@ -1,6 +1,7 @@
 package com.oneday.web.repository;
 
 import com.oneday.web.entity.Board;
+import com.oneday.web.repository.Search.SearchBoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>, SearchBoardRepository {
     // 한개의 로우(Object) 내에 Object[]로 나옴
     @Query("Select b, w From Board b left join b.writer w Where b.bno = :bno")
     Object getBoardWithWriter(@Param("bno") Long bno);

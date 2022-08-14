@@ -87,4 +87,10 @@ public class BoardRepositoryTests {
 
         System.out.print(Arrays.toString(aoDat));
     }
+
+    // Querydsl 테스트(JPQLQuery)
+    @Test
+    public void testSearch1() {
+        boardRepository.search1();
+    }
 }
