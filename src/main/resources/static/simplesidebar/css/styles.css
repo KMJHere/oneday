@@ -4904,6 +4904,19 @@ textarea.form-control-lg {
   top: -1px;
 }
 
+
+.badge.badge-secondary {
+    background-color: blue;
+    border: solid 2px;
+    border-color: #FF00FF;
+}
+
+.badge.badge-info {
+    background-color: white;
+    color: black;
+    border: solid 2px;
+}
+
 .alert {
   position: relative;
   padding: 1rem 1rem;
