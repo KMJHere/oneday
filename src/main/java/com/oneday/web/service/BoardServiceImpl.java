@@ -43,7 +43,11 @@ public class BoardServiceImpl implements BoardService{
         // Function<T, R>는 T타입의 인자를 받고, R타입의 객체를 리턴
         Function<Object[], BoardDTO> fn = (en -> entityToDTO((Board)en[0], (Member)en[1], (Long)en[2]));
 
-        Page<Object[]> result = boardRepository.getBoardWithReplyCount(pageRequestDTO.getPageable(Sort.by("bno").descending()));
+        // Page<Object[]> result = boardRepository.getBoardWithReplyCount(pageRequestDTO.getPageable(Sort.by("bno").descending()));
+
+        Page<Object[]> result = boardRepository.searchPage(
+                pageRequestDTO.getType(), pageRequestDTO.getKeyword(), pageRequestDTO.getPageable(Sort.by("bno").descending())
+            );
 
         return new PageResultDTO<>(result, fn);
     }
