@@ -63,6 +63,7 @@ public class MovieRepositoryTests {
 
     @Test
     public void testGetMovieWithAll() {
+        // int > Long = Long.valueOf();
         List<Object[]> result = movieRepository.getMovieWithAll(Long.valueOf(14));
 
         System.out.println(result);

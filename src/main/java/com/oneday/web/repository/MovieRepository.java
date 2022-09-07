@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,9 +17,10 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             )
     Page<Object[]> getListPage(Pageable pageable); // 페이지 처리
 
-    @Query("Select m, mi " +
+    @Query("Select m, mi, avg(coalesce(r.grade, 0)), count(r) " +
                 "From Movie m Left Outer Join MovieImage mi on mi.movie = m " +
-                "Where 1 =1 And m.mno = :mno"
+                "Left Outer Join Review r on r.movie = m " +
+                "Where 1 =1 And m.mno = :mno Group By mi"
             )
-    List<Object[]> getMovieWithAll(Long mno); // 특정 리스트 조회
+    List<Object[]> getMovieWithAll(@Param("mno") Long mno); // 특정 리스트 조회
 }
