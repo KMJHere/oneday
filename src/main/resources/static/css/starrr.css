@@ -1,0 +1,24 @@
+.starrr {
+  display: inline-flex;
+}
+.starrr a {
+    font-size: 16px;
+    padding: 0 1px;
+    cursor: pointer;
+    color: #FFD119;
+    text-decoration: none;
+ }
+ /* 운영 환경에서는 경로 사용 x, 연습용 */
+.fa-regular {
+    content:url("http://localhost:8080/image/star-regular.svg");
+    width: 15px;
+    height: 15px;
+}
+
+.fa-solid {
+    content:url("http://localhost:8080/image/star-solid.svg");
+    width: 15px;
+    height: 15px;
+}
+
+
