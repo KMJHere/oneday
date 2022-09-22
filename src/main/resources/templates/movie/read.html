@@ -17,12 +17,16 @@
         </div>
         <div class="uploadResult">
             <ul>
-                <li th:each="movieImage: ${dto.imageDTOList}">
+                <li th:each="movieImage: ${dto.imageDTOList}" th:data-file="${movieImage.getThumbnailURL()}">
                     <img th:if="${movieImage.path != null}" th:src="|/display?fileName=${movieImage.getThumbnailURL()}|">
                 </li>
             </ul>
         </div>
         <button type="button" class="btn btn-primary">Review Count <span class="badge badge-light">[[${dto.reviewCnt}]]</span></button>
+        <button type="button" class="btn btn-info addReviewBtn">Review Register</button><br/><br/>
+        <div class="list-group reviewList">
+
+        </div>
 
         <div class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -30,7 +34,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title">Add Reply</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true">x</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -59,7 +63,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Movie Review</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" id="btnClose" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -101,7 +105,7 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" id="closeImageModel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -143,6 +147,10 @@
     $(function() {
         var grade = 0;
         var mno = [[${dto.mno}]];
+        var reviewModal = $(".reviewModal");
+        var inputMid = $('input[name="mid"]');
+        var inputText = $('input[name="text"]');
+        var reviewnum;
 
         $(".starrr").starrr({
             rating: grade,
@@ -154,7 +162,143 @@
             }
         });
 
+        $("#btnClose").on("click", function() {
+            reviewModal.modal("hide");
+        });
+
         // 확인용도 바로 띄우기
-        $(".reviewModal").modal("show");
+        // $(".reviewModal").modal("show");
+
+        $(".addReviewBtn").click(function() {
+            inputMid.val("");
+            inputText.val("");
+
+            $(".removeBtn, .modifyBtn").hide();
+            $(".reviewSaveBtn").show();
+
+            reviewModal.modal("show");
+        });
+
+        $(".reviewSaveBtn").click(function() {
+            var data = {mno:mno, grade:grade, text:inputText.val(), mid:inputMid.val()};
+
+            console.log(data);
+
+            $.ajax({
+                url: "/reviews/" + mno,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function(result) {
+                    console.log("result: " + result);
+                    self.location.reload();
+                }
+            });
+
+            reviewModal.modal("hide");
+        });
+
+        // 페이지 오픈 시 리뷰 데이터 가져오기
+        function getMovieReviews() {
+            function formatTime(str) {
+                var date = new Date(str);
+
+                return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes();
+            }
+
+            $.getJSON("/reviews/"+mno+"/all", function(arDat) {
+                var sStr = "";
+
+                $.each(arDat, function(idx, review) {
+                    console.log(review);
+
+                   sStr += "<div class='card-body' data-reviewnum=" + review.reviewnum + " data-mid=" + review.mid + ">";
+                   sStr += "    <h5 class='card-title'>" + review.text + " <span>" + review.grade + "</span></h5>";
+                   sStr += "    <h6 class='card-subtitle mb-2 text-muted'>" + review.nickname + "</h6>";
+                   sStr += "    <p class='card-text'>" + formatTime(review.regDate) + "</p>";
+                   sStr += "</div>";
+                });
+
+                $(".reviewList").html(sStr);
+            });
+        }
+
+        getMovieReviews();
+
+        // Modify Review
+        $(".reviewList").on("click", ".card-body", function() {
+            $(".reviewSaveBtn").hide();
+            $(".removeBtn, .modifyBtn").show();
+
+            var targetReview = $(this);
+
+            reviewnum = targetReview.data("reviewnum");
+
+            console.log("reviewnum: " + reviewnum);
+            inputMid.val(targetReview.data("mid"));
+            // end() > 이전 선택한 요소 반환
+            inputText.val(targetReview.find(".card-title").clone().children().remove().end().text());
+
+            console.log("뭐시 들었나?" + inputText.val());
+
+            var grade = targetReview.find(".card-title span").html();
+            $(".starrr a:nth-child(" + grade + ")").trigger("click");
+
+            $(".reviewModal").modal("show");
+        });
+
+        $(".modifyBtn").on("click", function() {
+            var data = {reviewnum:reviewnum, mno:mno, grade:grade, text:inputText.val(), mid:inputMid.val()};
+
+            console.log(data);
+
+            $.ajax({
+                url: "/reviews/" + mno + "/" + reviewnum,
+                type: "PUT",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function(result) {
+                    console.log("result: " + result);
+                    window.location.reload();
+                }
+            });
+
+            reviewModal.modal("hide");
+        });
+
+        $(".removeBtn").on("click", function() {
+            var data = {reviewnum:reviewnum};
+
+            console.log(data);
+
+            $.ajax({
+                url: "/reviews/" + mno + "/" + reviewnum,
+                type: "DELETE",
+                contentType: "application/json; charset=utf-8",
+                dataType: "text",
+                success: function(result) {
+                    console.log("result: " + result);
+                    self.location.reload();
+                }
+            });
+
+            reviewModal.modal("hide");
+        });
+
+        $(".uploadResult li").click(function() {
+            var file = $(this).data("file");
+
+            console.log("file있어? " + file);
+
+            $(".imageModal .modal-body").html("<img style='width:100%' src='/display?fileName=" + file + "&size=1'>");
+
+            $(".imageModal").modal("show");
+        });
+
+        $("#closeImageModel").click(function() {
+            $(".imageModal").modal("hide");
+        });
     });
 </script>

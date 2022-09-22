@@ -105,7 +105,7 @@ public class UploadController {
     }
 
     @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName) {
+    public ResponseEntity<byte[]> getFile(String fileName, String size) {
 
         log.info("fileName MJ: " + fileName);
         ResponseEntity<byte[]> result = null;
@@ -117,6 +117,11 @@ public class UploadController {
 
             File file = new File(uploadPath + File.separator + srcFileNm);
 
+            // size 확인 후 값이 있는 경우 원본 파일 전달(substring s_ 두개 뒤부터,,)
+            if(size != null && size.equals("1")) {
+                file = new File(file.getParent(), file.getName().substring(2));
+            }
+            
             log.info("file: " + file);
 
             HttpHeaders header = new HttpHeaders();

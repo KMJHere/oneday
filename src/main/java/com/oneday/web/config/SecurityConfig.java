@@ -22,6 +22,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // InMemory로 테스트 사용자 생성
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
       UserDetails user = User.builder().username("kmj")
