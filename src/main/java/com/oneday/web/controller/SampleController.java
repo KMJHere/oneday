@@ -1,7 +1,9 @@
 package com.oneday.web.controller;
 
 import com.oneday.web.dto.SampleDTO;
+import com.oneday.web.security.dto.ClubAuthMemberDTO;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +24,13 @@ public class SampleController {
         log.info("전체가능..");
     }
 
+    // @AuthenticationPrincipal 어노테이션을 이용해 회원 정보 출력
     @GetMapping("/member")
-    public void exMember() {
+    public void exMember(@AuthenticationPrincipal ClubAuthMemberDTO clubAuthMemberDTO) {
         log.info("멤버가능..");
+
+        log.info("member Info: " + clubAuthMemberDTO);
+
     }
 
     @GetMapping("/admin")

@@ -22,6 +22,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /*
     // InMemory로 테스트 사용자 생성
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
@@ -32,6 +33,7 @@ public class SecurityConfig {
 
         return new InMemoryUserDetailsManager(user);
     }
+     */
 
     // [2022-06-18 김민정 수정 Start]
     /* WebSecurityConfigurerAdapter deprecated 이유로 수정
