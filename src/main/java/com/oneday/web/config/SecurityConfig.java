@@ -1,6 +1,8 @@
 package com.oneday.web.config;
 
+import com.oneday.web.security.handler.ClubLoginSuccessHandler;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -17,6 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @Log4j2
 public class SecurityConfig {
+    @Autowired
+    UserDetailsService userDetailsService;
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -57,9 +62,22 @@ public class SecurityConfig {
 
         http.formLogin(); // 인가 or 인증에 문제 시 로그인 화면 반환
         http.csrf().disable(); // csrf 토큰 비활성화
+
         http.logout(); // invalidatedHttpSession() deleteCookies() 쿠키나 세션을 무효화 시키는 설정 추가 가능
+
+        // http.oauth2Login();
+        // 소셜 로그인 처리 추가
+        http.oauth2Login().successHandler(successHandler());
+
+        // remember me 설정(초단위로 설정), 7일, 소셜 로그인은 x
+        http.rememberMe().tokenValiditySeconds(60*60*7).userDetailsService(userDetailsService);
 
         return http.build();
     }
     // [2022-06-18 김민정 수정 End]
+
+    @Bean
+    public ClubLoginSuccessHandler successHandler() {
+        return new ClubLoginSuccessHandler(passwordEncoder());
+    }
 }
