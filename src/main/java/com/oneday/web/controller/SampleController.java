@@ -3,6 +3,7 @@ package com.oneday.web.controller;
 import com.oneday.web.dto.SampleDTO;
 import com.oneday.web.security.dto.ClubAuthMemberDTO;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,20 +21,22 @@ import java.util.stream.IntStream;
 @RequestMapping("/sample/")
 public class SampleController {
     @GetMapping("/all")
+    @PreAuthorize("permitAll()")
     public void exAll() {
         log.info("전체가능..");
     }
 
     // @AuthenticationPrincipal 어노테이션을 이용해 회원 정보 출력
     @GetMapping("/member")
+    @PreAuthorize("hasRole('USER')")
     public void exMember(@AuthenticationPrincipal ClubAuthMemberDTO clubAuthMemberDTO) {
         log.info("멤버가능..");
 
         log.info("member Info: " + clubAuthMemberDTO);
 
     }
-
     @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
     public void exAdmin() {
         log.info("관리자가능..");
     }
@@ -83,5 +86,15 @@ public class SampleController {
     @GetMapping({"/exLayout1", "/exLayout2", "/exTemplate", "/exSidebar"})
     public void exLayout1() {
         log.info("exLayout...");
+    }
+
+    // @PreAuthorize 어노테이션 확인
+    @PreAuthorize("#clubAuthMember != null && #clubAuthMember.username eq \"user95@kmj.org\"")
+    @GetMapping("/exOnly")
+    public String exMemberOnly(@AuthenticationPrincipal ClubAuthMemberDTO clubAuthMember) {
+        log.info("exMemberOnly");
+        log.info("clubAuthMemberDTO: " + clubAuthMember);
+
+        return "/sample/admin";
     }
 }
