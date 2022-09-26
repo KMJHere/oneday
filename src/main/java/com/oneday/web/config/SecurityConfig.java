@@ -1,11 +1,15 @@
 package com.oneday.web.config;
 
+import com.oneday.web.security.filter.ApiCheckFilter;
+import com.oneday.web.security.filter.ApiLoginFilter;
 import com.oneday.web.security.handler.ClubLoginSuccessHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -57,6 +62,7 @@ public class SecurityConfig {
     // WebSecurityConfigurerAdapter > SecurityFilterChain 빈 등록 방식으로 변경
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         /*
         http.authorizeRequests()
                 .antMatchers("/sample/all").permitAll()
@@ -76,6 +82,11 @@ public class SecurityConfig {
         // remember me 설정(초단위로 설정), 7일, 소셜 로그인은 x
         http.rememberMe().tokenValiditySeconds(60*60*7).userDetailsService(userDetailsService);
 
+        // filter 동작 순서 바꿔보기
+        http.addFilterBefore(apiCheckFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.addFilterBefore(apiLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
     // [2022-06-18 김민정 수정 End]
@@ -83,5 +94,30 @@ public class SecurityConfig {
     @Bean
     public ClubLoginSuccessHandler successHandler() {
         return new ClubLoginSuccessHandler(passwordEncoder());
+    }
+
+    @Bean
+    public ApiLoginFilter apiLoginFilter(AuthenticationManager authenticationManager) throws Exception {
+        log.info("authenticationManager: " + authenticationManager);
+
+        ApiLoginFilter apiLoginFilter  = new ApiLoginFilter("/api/login");
+        apiLoginFilter.setAuthenticationManager(authenticationManager);
+
+        /*
+        * apiLoginFilter.setAuthenticationManager(authenticationManager());
+        * */
+
+        return apiLoginFilter;
+    }
+
+    @Bean
+    public ApiCheckFilter apiCheckFilter() {
+        return new ApiCheckFilter("/notes/**/*");
+    }
+
+    //등록된 AuthenticationManager을 불러오기 위한 Bean
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }
