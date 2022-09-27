@@ -8,6 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,15 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         return null;
          */
+    }
 
+    // 인증 성공 처리 > 별도 클래스 대신 AbstractAuthenticationProcessingFilter 클래스 -> successfulAuthentication() 메서드 override
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
+            throws IOException, ServletException {
+                log.info("---------------------ApiLoginFilter---------------------");
+                log.info("successfulAuthentication: " + authResult);
+                log.info(authResult.getPrincipal());
 
     }
 }

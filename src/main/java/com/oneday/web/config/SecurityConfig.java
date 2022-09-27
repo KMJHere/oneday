@@ -2,6 +2,7 @@ package com.oneday.web.config;
 
 import com.oneday.web.security.filter.ApiCheckFilter;
 import com.oneday.web.security.filter.ApiLoginFilter;
+import com.oneday.web.security.handler.ApiLoginFailHandler;
 import com.oneday.web.security.handler.ClubLoginSuccessHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +103,8 @@ public class SecurityConfig {
 
         ApiLoginFilter apiLoginFilter  = new ApiLoginFilter("/api/login");
         apiLoginFilter.setAuthenticationManager(authenticationManager);
+
+        apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
 
         /*
         * apiLoginFilter.setAuthenticationManager(authenticationManager());
