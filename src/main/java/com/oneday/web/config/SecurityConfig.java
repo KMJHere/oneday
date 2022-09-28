@@ -4,6 +4,7 @@ import com.oneday.web.security.filter.ApiCheckFilter;
 import com.oneday.web.security.filter.ApiLoginFilter;
 import com.oneday.web.security.handler.ApiLoginFailHandler;
 import com.oneday.web.security.handler.ClubLoginSuccessHandler;
+import com.oneday.web.security.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -60,6 +61,15 @@ public class SecurityConfig {
     }
     */
 
+    // [2022-09-27 김민정 수정 Start]
+    // jwtUtil 생성자에서 사용 가능하도록 수정
+    @Bean
+    public JWTUtil jwtUtil() {
+        return new JWTUtil();
+    }
+    // [2022-09-27 김민정 수정 End]
+
+
     // WebSecurityConfigurerAdapter > SecurityFilterChain 빈 등록 방식으로 변경
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -101,7 +111,7 @@ public class SecurityConfig {
     public ApiLoginFilter apiLoginFilter(AuthenticationManager authenticationManager) throws Exception {
         log.info("authenticationManager: " + authenticationManager);
 
-        ApiLoginFilter apiLoginFilter  = new ApiLoginFilter("/api/login");
+        ApiLoginFilter apiLoginFilter  = new ApiLoginFilter("/api/login", jwtUtil());
         apiLoginFilter.setAuthenticationManager(authenticationManager);
 
         apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
@@ -115,7 +125,7 @@ public class SecurityConfig {
 
     @Bean
     public ApiCheckFilter apiCheckFilter() {
-        return new ApiCheckFilter("/notes/**/*");
+        return new ApiCheckFilter("/notes/**/*", jwtUtil());
     }
 
     //등록된 AuthenticationManager을 불러오기 위한 Bean
@@ -123,4 +133,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.oneday.web.security.filter;
 
+import com.oneday.web.security.dto.ClubAuthMemberDTO;
+import com.oneday.web.security.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,9 +18,12 @@ import java.io.IOException;
 
 @Log4j2
 public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
+    private JWTUtil jwtUtil;
+
     // 문자열로 패턴을 받는 생성자 반드시 필요
-    public ApiLoginFilter(String defaultFilterProcessesUrl) {
+    public ApiLoginFilter(String defaultFilterProcessesUrl, JWTUtil jwtUtil) {
         super(defaultFilterProcessesUrl);
+        this.jwtUtil = jwtUtil;
     }
 
     // attemptAuthentication() 반드시 필요
@@ -48,11 +53,28 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     // 인증 성공 처리 > 별도 클래스 대신 AbstractAuthenticationProcessingFilter 클래스 -> successfulAuthentication() 메서드 override
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
-                log.info("---------------------ApiLoginFilter---------------------");
-                log.info("successfulAuthentication: " + authResult);
-                log.info(authResult.getPrincipal());
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        log.info("---------------------ApiLoginFilter---------------------");
+        log.info("successfulAuthentication: " + authResult);
+        log.info(authResult.getPrincipal());
+
+        // email address
+        String email = ((ClubAuthMemberDTO)authResult.getPrincipal()).getUsername();
+
+        String token = null;
+
+        try {
+            token = jwtUtil.generateToken(email);
+
+            response.setContentType("text/plain");
+            response.getOutputStream().write(token.getBytes());
+
+            log.info(token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 }

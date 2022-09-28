@@ -1,5 +1,6 @@
 package com.oneday.web.security.filter;
 
+import com.oneday.web.security.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONObject;
 import netscape.javascript.JSObject;
@@ -19,9 +20,13 @@ public class ApiCheckFilter extends OncePerRequestFilter {
     private AntPathMatcher antPathMatcher;
     private String pattern;
 
-    public ApiCheckFilter(String pattern) {
+    private JWTUtil jwtUtil;
+
+    // 생성자를 통해 주입
+    public ApiCheckFilter(String pattern, JWTUtil jwtUtil) {
         this.antPathMatcher = new AntPathMatcher();
         this.pattern = pattern;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -57,7 +62,7 @@ public class ApiCheckFilter extends OncePerRequestFilter {
         }
 
         // 다음 필터의 단계로 넘어가는 역할을 위해서 필요
-         filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     // 요청에 포함된 Authorization 헤더 값을 확인 후 boolean 타입 결과 반환
@@ -66,12 +71,25 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if(StringUtils.hasText(authHeader)) {
+        if(StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer")) {
             log.info("Authorization exist: " + authHeader);
 
+            try {
+                String email = jwtUtil.validateAndExtract(authHeader.substring(7));
+
+                log.info("validate result: " + email);
+                checkResult = email.length() > 0;
+
+
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            
+            /* jwt 토큰 검증으로 변경
             if(authHeader.equals("12345678")) {
                 checkResult = true;
             }
+            */
         }
 
         return checkResult;
