@@ -14,6 +14,6 @@ public class TestRestController {
     @GetMapping("/test")
     @Operation(summary = "요약", description = "test api 입니다..")
     public String testApi() {
-        return "test..";
+        return "바뀌었나..?";
     }
 }
