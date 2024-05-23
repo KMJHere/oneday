@@ -16,8 +16,9 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select() // ApiSelectorBuilder를 반환하며 상세한 설정 처리
-                .apis(RequestHandlerSelectors.any()) // 대상으로하는 api 설정
-                .paths(PathSelectors.any()) // controller에서 swagger를 지정할 대상 path 설정
+                //.apis(RequestHandlerSelectors.any()) // 대상으로하는 api 설정
+                .apis(RequestHandlerSelectors.basePackage("com.oneday.web.api"))
+                .paths(PathSelectors.ant("/api/**")) // controller에서 swagger를 지정할 대상 path 설정 ex).paths(PathSelectors.ant("/v1/api/**"))
                 .build()
                 .apiInfo(apiInfo());
     }
